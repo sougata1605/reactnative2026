@@ -37,7 +37,7 @@ const ProfileGallary = () => {
 
   // FETCH USERS
   useEffect(() => {
-    fetch('https://randomuser.me/api/?results=50')
+    fetch('https://randomuser.me/api/?results=5000')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch users');
         return res.json();
