@@ -31,16 +31,45 @@ const ProfileGallary = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // IP-based country states
+  const [country, setCountry] = useState('Detecting...');
+  const [countryCode, setCountryCode] = useState('');
+
+  // FETCH USERS
   useEffect(() => {
     fetch('https://randomuser.me/api/?results=50')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch users');
+        return res.json();
+      })
       .then(data => {
         setUsers(data.results);
         setLoading(false);
       })
       .catch(error => {
-        console.log(error);
+        console.log('User API Error:', error);
         setLoading(false);
+      });
+  }, []);
+
+  // DETECT COUNTRY USING IP ADDRESS
+  useEffect(() => {
+    fetch('https://ipapi.co/json/')
+      .then(res => {
+        if (!res.ok) throw new Error('Location API failed');
+        return res.json();
+      })
+      .then(data => {
+        if (data.error) {
+          throw new Error('Unable to detect country');
+        }
+
+        setCountry(data.country_name || 'Unknown');
+        setCountryCode(data.country_code || '');
+      })
+      .catch(error => {
+        console.log('IP Location Error:', error);
+        setCountry('Location unavailable');
       });
   }, []);
 
@@ -48,7 +77,9 @@ const ProfileGallary = () => {
     return (
       <View style={styles.loader}>
         <ActivityIndicator size="large" color="#FF6B00" />
-        <Text style={styles.loadingText}>Loading Profiles...</Text>
+        <Text style={styles.loadingText}>
+          Loading Profiles...
+        </Text>
       </View>
     );
   }
@@ -66,16 +97,32 @@ const ProfileGallary = () => {
 
         <TouchableOpacity style={styles.notification}>
           <Text style={styles.headerIcon}>🔔</Text>
+
           <View style={styles.notificationBadge}>
             <Text style={styles.badgeText}>2</Text>
           </View>
         </TouchableOpacity>
 
+        {/* IP DETECTED COUNTRY */}
+
         <TouchableOpacity style={styles.location}>
+
+          {countryCode !== '' && (
+            <Image
+              source={{
+                uri: `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`,
+              }}
+              style={styles.headerFlag}
+              resizeMode="contain"
+            />
+          )}
+
           <Text style={styles.locationText}>
-            📍 {users[0]?.location.country || 'Explore'}
+            📍 {country}
           </Text>
+
           <Text style={styles.arrow}>⌄</Text>
+
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.searchButton}>
@@ -149,7 +196,7 @@ const ProfileGallary = () => {
               </Text>
             </View>
 
-            {/* COUNTRY FLAG */}
+            {/* USER COUNTRY FLAG */}
 
             <View style={styles.flagContainer}>
               <Image
@@ -157,7 +204,9 @@ const ProfileGallary = () => {
                   uri: `https://flagcdn.com/w40/${item.nat.toLowerCase()}.png`,
                 }}
                 style={styles.flag}
+                resizeMode="contain"
               />
+
               <Text style={styles.nationality}>
                 {item.nat}
               </Text>
@@ -263,9 +312,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
+  // COUNTRY HEADER
+
   location: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+
+  headerFlag: {
+    width: 25,
+    height: 18,
+    marginRight: 7,
   },
 
   locationText: {
@@ -383,26 +440,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  // CARD FLAGS
+
   flagContainer: {
-  position: 'absolute',
-  top: 7,
-  left: 6,
-  flexDirection: 'row',
-  alignItems: 'center',
-},
+    position: 'absolute',
+    top: 7,
+    left: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 
-flag: {
-  width: 28,
-  height: 19,
-  resizeMode: 'contain',
-},
+  flag: {
+    width: 28,
+    height: 19,
+    resizeMode: 'contain',
+  },
 
-nationality: {
-  color: '#FFFFFF',
-  fontSize: 10,
-  fontWeight: 'bold',
-  marginLeft: 4,
-},
+  nationality: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+    marginLeft: 4,
+  },
 
   // BOTTOM NAVIGATION
 
