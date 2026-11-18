@@ -10,7 +10,7 @@ const ProfileGallary = () => {
   const colorScheme = useColorScheme();
 
   useEffect(() => {
-    fetch("https://randomuser.me/api/?results=10")
+    fetch("https://randomuser.me/api/?results=50")
       .then((res) => res.json())
       .then((data) => {
         setUsers(data.results);
