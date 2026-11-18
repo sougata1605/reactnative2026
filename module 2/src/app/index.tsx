@@ -1,83 +1,41 @@
+import React from 'react'
 
-import React, { useState } from 'react';
-
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  TextInput,
-} from 'react-native';
+import { Text, View, StyleSheet,Image,TextInput } from "react-native";
 
 const Index = () => {
-
-  const [text, onChangeText] = useState('');
-  const [number, onChangeNumber] = useState('');
-
   return (
-    <View style={styles.container}>
+    <view>
 
-      <Text style={styles.title}>
-        Subhas Chandra Chatterjee
-      </Text>
+      
+      <text>
+        Subhas chandra chatterjee 
+      </text>
+<view><text>  Shanta chatterjee</text></view>
+    
 
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeText}
-        value={text}
-        placeholder="Enter your name"
-      />
+<Image
+  source={require('../../assets/images/1789721838294.jpg')}
+  style={{ height: 100, width: 100 }}
+/>
 
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeNumber}
-        value={number}
-        placeholder="Enter your number"
-        keyboardType="numeric"
-      />
 
-      <Text style={styles.result}>
-        Your name: {text}
-      </Text>
 
-      <Text style={styles.result}>
-        Your number: {number}
-      </Text>
+     
+    </view>
 
-    </View>
-  );
-};
+
+
+  )
+}
+
 
 const styles = StyleSheet.create({
-
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-
   input: {
-    height: 45,
-    width: '100%',
-    marginVertical: 10,
+    height: 40,
+    margin: 12,
     borderWidth: 1,
-    borderColor: '#999',
     padding: 10,
-    borderRadius: 8,
   },
-
-  result: {
-    fontSize: 16,
-    marginTop: 10,
-  },
-
 });
 
-export default Index;
+export default Index
