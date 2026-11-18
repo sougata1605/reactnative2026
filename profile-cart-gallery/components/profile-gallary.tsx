@@ -1,132 +1,203 @@
 
-import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator, useColorScheme } from 'react-native';
 import React, { useEffect, useState } from 'react';
 
+import {
+  View,
+  Text,
+  Image,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  StatusBar,
+  TouchableOpacity,
+} from 'react-native';
 
-const getFlagEmoji = (countryCode: string) => {
-  return countryCode
-    .toUpperCase()
-    .replace(/./g, (char) =>
-      String.fromCodePoint(127397 + char.charCodeAt(0))
-    );
-};
+const cardColors = [
+  '#F06400',
+  '#7135A5',
+  '#4245E8',
+  '#16A078',
+  '#D51D91',
+  '#C21878',
+  '#258FD0',
+  '#C21878',
+  '#269D91',
+  '#E64A19',
+  '#3445B5',
+  '#168B68',
+];
 
 const ProfileGallary = () => {
-
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const colorScheme = useColorScheme();
-
   useEffect(() => {
-    fetch("https://randomuser.me/api/?results=50")
-      .then((res) => res.json())
-      .then((data) => {
+    fetch('https://randomuser.me/api/?results=50')
+      .then(res => res.json())
+      .then(data => {
         setUsers(data.results);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(error => {
+        console.log(error);
         setLoading(false);
       });
-
   }, []);
 
   if (loading) {
     return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text>Loading...</Text>
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#FF6B00" />
+        <Text style={styles.loadingText}>Loading Profiles...</Text>
       </View>
     );
   }
 
   return (
-    <View
-      style={[
-        styles.container,
-        colorScheme === "dark" ? styles.darkBg : styles.lightBg
-      ]}
-    >
+    <View style={styles.container}>
+      <StatusBar
+        backgroundColor="#20232E"
+        barStyle="light-content"
+      />
 
-      <Text style={styles.heading}>Profile Gallery</Text>
+      {/* TOP HEADER */}
+
+      <View style={styles.header}>
+
+        <TouchableOpacity style={styles.notification}>
+          <Text style={styles.headerIcon}>🔔</Text>
+          <View style={styles.notificationBadge}>
+            <Text style={styles.badgeText}>2</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.location}>
+          <Text style={styles.locationText}>
+            📍 {users[0]?.location.country || 'Explore'}
+          </Text>
+          <Text style={styles.arrow}>⌄</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.searchButton}>
+          <Text style={styles.searchIcon}>⌕</Text>
+        </TouchableOpacity>
+
+      </View>
+
+      {/* PROFILE GALLERY */}
 
       <FlatList
         data={users}
-        keyExtractor={(item) => item.login.uuid}
+        keyExtractor={item => item.login.uuid}
+        numColumns={3}
+        showsVerticalScrollIndicator={false}
+        columnWrapperStyle={styles.row}
+        contentContainerStyle={styles.list}
 
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
 
-          <View style={styles.card}>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={[
+              styles.card,
+              {
+                backgroundColor:
+                  cardColors[index % cardColors.length],
+              },
+            ]}
+          >
 
-            <Image
-              source={{ uri: item.picture.large }}
-              style={styles.profileImage}
-            />
+            {/* TOP CARD ICONS */}
 
-            <View style={styles.userInfo}>
-
-              <Text style={styles.name}>
-                {item.name.title} {item.name.first} {item.name.last}
-              </Text>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.text}>Gender: </Text>
-
-                <Text style={{ fontSize: 18 }}>
-                  {item.gender === 'male' ? '👨' : '👩'}
-                </Text>
-
-                <Text style={styles.text}>
-                  {item.gender.toUpperCase()}
-                </Text>
-              </View>
-
-              <Text style={styles.text}>
-                Age: {item.dob.age}
-              </Text>
-
-              <Text style={styles.text}>
-                Email: {item.email}
-              </Text>
-
-              <Text style={styles.text}>
-                Phone: {item.phone}
-              </Text>
-
-              <Text style={styles.text}>
-                City: {item.location.city}
-              </Text>
-
-
-
-
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
-                <Text style={styles.text}>Country: </Text>
-
-                <Image
-                  source={{
-                    uri: `https://flagcdn.com/w40/${item.nat.toLowerCase()}.png`
-                  }}
-                  style={{ width: 25, height: 18 }}
-                  resizeMode="contain"
-                />
-
-              </View>
-
-              <Text style={styles.text}>
-                Nationality: {item.location.country}
-              </Text>
-
+            <View style={styles.cardTop}>
+              <Text style={styles.smallIcon}>●</Text>
+              <Text style={styles.smallIcon}>♨</Text>
             </View>
 
-          </View>
+            {/* PROFILE IMAGE */}
 
+            <View style={styles.imageWrapper}>
+              <Image
+                source={{ uri: item.picture.large }}
+                style={styles.profileImage}
+              />
+            </View>
+
+            {/* USER NAME */}
+
+            <Text style={styles.name} numberOfLines={2}>
+              {item.name.first} {item.name.last}
+            </Text>
+
+            {/* GENDER */}
+
+            <Text style={styles.profession}>
+              {item.gender === 'male' ? '♂ Male' : '♀ Female'}
+            </Text>
+
+            {/* AGE */}
+
+            <Text style={styles.age}>
+              Age: {item.dob.age}
+            </Text>
+
+            {/* CITY */}
+
+            <View style={styles.cityContainer}>
+              <Text style={styles.city} numberOfLines={1}>
+                {item.location.city}
+              </Text>
+            </View>
+
+            {/* COUNTRY FLAG */}
+
+            <View style={styles.flagContainer}>
+              <Image
+                source={{
+                  uri: `https://flagcdn.com/w40/${item.nat.toLowerCase()}.png`,
+                }}
+                style={styles.flag}
+              />
+              <Text style={styles.nationality}>
+                {item.nat}
+              </Text>
+            </View>
+
+          </TouchableOpacity>
         )}
-
-        showsVerticalScrollIndicator={false}
       />
+
+      {/* BOTTOM NAVIGATION */}
+
+      <View style={styles.bottomNav}>
+
+        <TouchableOpacity style={styles.navItem}>
+          <Text style={styles.navIcon}>ϟ</Text>
+          <Text style={styles.navText}>Feed</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navItem}>
+          <Text style={[styles.navIcon, styles.activeIcon]}>♙</Text>
+          <Text style={[styles.navText, styles.activeText]}>
+            Explore
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.addButton}>
+          <Text style={styles.addIcon}>+</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navItem}>
+          <Text style={styles.navIcon}>☏</Text>
+          <Text style={styles.navText}>Messages</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navItem}>
+          <Text style={styles.navIcon}>♟</Text>
+          <Text style={styles.navText}>Profile</Text>
+        </TouchableOpacity>
+
+      </View>
 
     </View>
   );
@@ -138,61 +209,253 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    padding: 15,
+    backgroundColor: '#20232E',
   },
 
-  lightBg: {
-    backgroundColor: '#F2F4F7',
+  loader: {
+    flex: 1,
+    backgroundColor: '#20232E',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
-  darkBg: {
-    backgroundColor: '#121212',
+  loadingText: {
+    color: '#FFFFFF',
+    marginTop: 12,
+    fontSize: 15,
   },
 
-  heading: {
-    fontSize: 25,
+  // HEADER
+
+  header: {
+    height: 65,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 17,
+  },
+
+  notification: {
+    position: 'relative',
+    padding: 5,
+  },
+
+  headerIcon: {
+    fontSize: 23,
+    color: '#FFFFFF',
+  },
+
+  notificationBadge: {
+    position: 'absolute',
+    right: -2,
+    top: -2,
+    backgroundColor: '#FF4B16',
+    width: 19,
+    height: 19,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  badgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
     fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#007AFF',
   },
+
+  location: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  locationText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+
+  arrow: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    marginLeft: 5,
+  },
+
+  searchButton: {
+    width: 34,
+    height: 34,
+    backgroundColor: '#343846',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  searchIcon: {
+    color: '#FFFFFF',
+    fontSize: 25,
+  },
+
+  // FLATLIST
+
+  list: {
+    paddingHorizontal: 9,
+    paddingBottom: 12,
+  },
+
+  row: {
+    justifyContent: 'space-between',
+  },
+
+  // PROFILE CARD
 
   card: {
+    width: '32.3%',
+    height: 218,
+    borderRadius: 6,
+    marginBottom: 4,
+    paddingHorizontal: 5,
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+
+  cardTop: {
+    width: '100%',
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 12,
-    elevation: 3,
+    justifyContent: 'space-between',
+    paddingTop: 7,
+  },
+
+  smallIcon: {
+    color: '#FFFFFF',
+    fontSize: 9,
+    fontWeight: 'bold',
+  },
+
+  imageWrapper: {
+    marginTop: 12,
+    width: 76,
+    height: 76,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    padding: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   profileImage: {
-    width: 80,
-    height: 80,
+    width: '100%',
+    height: '100%',
     borderRadius: 40,
   },
 
-  userInfo: {
-    flex: 1,
-    marginLeft: 15,
-  },
-
   name: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'orange',
-    marginBottom: 8,
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginTop: 12,
+    minHeight: 30,
   },
 
-  text: {
-    fontSize: 13,
-    color: '#555555',
-    marginBottom: 5,
+  profession: {
+    color: '#F5EAF5',
+    fontSize: 10,
+    textAlign: 'center',
+    marginTop: 2,
   },
 
-  loaderContainer: {
+  age: {
+    color: '#F5EAF5',
+    fontSize: 10,
+    marginTop: 4,
+  },
+
+  cityContainer: {
+    marginTop: 'auto',
+    marginBottom: 7,
+    width: '100%',
+    alignItems: 'center',
+  },
+
+  city: {
+    color: '#F5EAF5',
+    fontSize: 11,
+    textAlign: 'center',
+  },
+
+  flagContainer: {
+  position: 'absolute',
+  top: 7,
+  left: 6,
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+flag: {
+  width: 28,
+  height: 19,
+  resizeMode: 'contain',
+},
+
+nationality: {
+  color: '#FFFFFF',
+  fontSize: 10,
+  fontWeight: 'bold',
+  marginLeft: 4,
+},
+
+  // BOTTOM NAVIGATION
+
+  bottomNav: {
+    height: 68,
+    backgroundColor: '#191C27',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingHorizontal: 5,
+    borderTopWidth: 1,
+    borderTopColor: '#343846',
+  },
+
+  navItem: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  navIcon: {
+    fontSize: 23,
+    color: '#AEB3C0',
+  },
+
+  navText: {
+    fontSize: 9,
+    color: '#AEB3C0',
+    marginTop: 3,
+  },
+
+  activeIcon: {
+    color: '#FF6B00',
+  },
+
+  activeText: {
+    color: '#FF6B00',
+  },
+
+  addButton: {
+    width: 43,
+    height: 43,
+    borderRadius: 25,
+    backgroundColor: '#FF6B00',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  addIcon: {
+    color: '#FFFFFF',
+    fontSize: 32,
+    lineHeight: 37,
+    fontWeight: 'bold',
   },
 
 });
