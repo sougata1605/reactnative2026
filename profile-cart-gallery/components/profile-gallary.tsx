@@ -70,9 +70,17 @@ const ProfileGallary = () => {
                 {item.name.title} {item.name.first} {item.name.last}
               </Text>
 
-              <Text style={styles.text}>
-                Gender: {item.gender}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.text}>Gender: </Text>
+
+                <Text style={{ fontSize: 18 }}>
+                  {item.gender === 'male' ? '👨' : '👩'}
+                </Text>
+
+                <Text style={styles.text}>
+                  {item.gender.toUpperCase()}
+                </Text>
+              </View>
 
               <Text style={styles.text}>
                 Age: {item.dob.age}
@@ -171,7 +179,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#222222',
+    color: 'orange',
     marginBottom: 8,
   },
 
