@@ -2,6 +2,15 @@
 import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator, useColorScheme } from 'react-native';
 import React, { useEffect, useState } from 'react';
 
+
+const getFlagEmoji = (countryCode: string) => {
+  return countryCode
+    .toUpperCase()
+    .replace(/./g, (char) =>
+      String.fromCodePoint(127397 + char.charCodeAt(0))
+    );
+};
+
 const ProfileGallary = () => {
 
   const [users, setUsers] = useState([]);
@@ -81,12 +90,25 @@ const ProfileGallary = () => {
                 City: {item.location.city}
               </Text>
 
-              <Text style={styles.text}>
-                Country: {item.location.country}
-              </Text>
+
+
+
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                <Text style={styles.text}>Country: </Text>
+
+                <Image
+                  source={{
+                    uri: `https://flagcdn.com/w40/${item.nat.toLowerCase()}.png`
+                  }}
+                  style={{ width: 25, height: 18 }}
+                  resizeMode="contain"
+                />
+
+              </View>
 
               <Text style={styles.text}>
-                Nationality: {item.nat}
+                Nationality: {item.location.country}
               </Text>
 
             </View>
