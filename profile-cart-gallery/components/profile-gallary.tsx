@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 
 import {
@@ -91,16 +90,16 @@ const ProfileGallary = () => {
 
 
 
-const filteredUsers = users.filter((item) => {
-  const search = searchQuery.toLowerCase();
+  const filteredUsers = users.filter((item) => {
+    const search = searchQuery.toLowerCase();
 
-  const fullName =
-    `${item.name.first} ${item.name.last}`.toLowerCase();
+    const fullName =
+      `${item.name.first} ${item.name.last}`.toLowerCase();
 
-  const country = item.location.country.toLowerCase();
+    const country = item.location.country.toLowerCase();
 
-  return fullName.includes(search) || country.includes(search);
-});
+    return fullName.includes(search) || country.includes(search);
+  });
 
 
 
@@ -126,22 +125,22 @@ const filteredUsers = users.filter((item) => {
 
 
 
-{searchOpen && (
-  <TextInput
-    style={{
-      backgroundColor: '#1E293B',
-      color: '#FFFFFF',
-      padding: 12,
-      borderRadius: 12,
-      marginHorizontal: 12,
-      marginBottom: 12,
-    }}
-    placeholder="Search name or country..."
-    placeholderTextColor="#94A3B8"
-    value={searchQuery}
-    onChangeText={setSearchQuery}
-  />
-)}
+        {searchOpen && (
+          <TextInput
+            style={{
+              backgroundColor: '#1E293B',
+              color: '#FFFFFF',
+              padding: 12,
+              borderRadius: 12,
+              marginHorizontal: 12,
+              marginBottom: 12,
+            }}
+            placeholder="Search name or country..."
+            placeholderTextColor="#94A3B8"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        )}
 
 
 
@@ -196,7 +195,7 @@ const filteredUsers = users.filter((item) => {
       {/* PROFILE GALLERY */}
 
       <FlatList
-        
+
 
 
         data={filteredUsers}
@@ -303,8 +302,17 @@ const filteredUsers = users.filter((item) => {
 
         <TouchableOpacity style={styles.navItem}>
           <Text style={styles.navIcon}>☏</Text>
-          <Text style={styles.navText}>Messages</Text>
+          <Text style={styles.navText}>Messages/Whatsapp </Text>
         </TouchableOpacity>
+
+
+
+        <TouchableOpacity style={styles.navItem}>
+  <Text style={styles.navIcon}>✉</Text>
+  <Text style={styles.navText}>Email</Text>
+</TouchableOpacity>
+
+
 
         <TouchableOpacity style={styles.navItem}>
           <Text style={styles.navIcon}>♟</Text>
