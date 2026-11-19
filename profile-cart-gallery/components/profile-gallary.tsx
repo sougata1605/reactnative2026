@@ -52,25 +52,85 @@ const ProfileGallary = () => {
       });
   }, []);
 
-  // DETECT COUNTRY USING IP ADDRESS
+  // DETECT COUNTRY USING IP ADDRESS (with fallback APIs for mobile)
   useEffect(() => {
-    fetch('https://ipapi.co/json/')
-      .then(res => {
-        if (!res.ok) throw new Error('Location API failed');
-        return res.json();
-      })
-      .then(data => {
-        if (data.error) {
-          throw new Error('Unable to detect country');
-        }
+    let isMounted = true;
 
-        setCountry(data.country_name || 'Unknown');
-        setCountryCode(data.country_code || '');
-      })
-      .catch(error => {
-        console.log('IP Location Error:', error);
+    const detectCountry = async () => {
+      // API 1: ipwho.is
+      try {
+        const response = await fetch('https://ipwho.is/');
+        const data = await response.json();
+
+        if (response.ok && data.success !== false && data.country && data.country_code) {
+          if (isMounted) {
+            setCountry(data.country);
+            setCountryCode(data.country_code);
+          }
+          return;
+        }
+      } catch (error) {
+        console.log('ipwho.is failed:', error);
+      }
+
+      // API 2: ipapi.co
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+
+        if (response.ok && !data.error && data.country_name && data.country_code) {
+          if (isMounted) {
+            setCountry(data.country_name);
+            setCountryCode(data.country_code);
+          }
+          return;
+        }
+      } catch (error) {
+        console.log('ipapi.co failed:', error);
+      }
+
+      // API 3: country.is (returns country code only)
+      try {
+        const response = await fetch('https://api.country.is/');
+        const data = await response.json();
+
+        const countryNames: { [key: string]: string } = {
+          IN: 'India',
+          US: 'United States',
+          GB: 'United Kingdom',
+          CA: 'Canada',
+          AU: 'Australia',
+          DE: 'Germany',
+          FR: 'France',
+          ES: 'Spain',
+          BD: 'Bangladesh',
+          NP: 'Nepal',
+          SG: 'Singapore',
+          AE: 'United Arab Emirates',
+        };
+
+        const code = data.country;
+
+        if (response.ok && code && isMounted) {
+          setCountryCode(code);
+          setCountry(countryNames[code] || code);
+          return;
+        }
+      } catch (error) {
+        console.log('country.is failed:', error);
+      }
+
+      if (isMounted) {
         setCountry('Location unavailable');
-      });
+        setCountryCode('');
+      }
+    };
+
+    detectCountry();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (loading) {
