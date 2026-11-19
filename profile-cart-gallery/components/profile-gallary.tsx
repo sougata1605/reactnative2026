@@ -252,11 +252,25 @@ const ProfileGallary = () => {
               Age: {item.dob.age}
             </Text>
 
+
+
+
+            <Text style={styles.phone}>
+              Phone : {item.phone}
+            </Text>
+
+
+
+
+
+
+
+
             {/* CITY */}
 
             <View style={styles.cityContainer}>
               <Text style={styles.city} numberOfLines={1}>
-                {item.location.city}
+              City :  {item.location.city}
               </Text>
             </View>
 
@@ -302,15 +316,15 @@ const ProfileGallary = () => {
 
         <TouchableOpacity style={styles.navItem}>
           <Text style={styles.navIcon}>☏</Text>
-          <Text style={styles.navText}>Messages/Whatsapp </Text>
+          <Text style={styles.navText}> Whatsapp </Text>
         </TouchableOpacity>
 
 
 
         <TouchableOpacity style={styles.navItem}>
-  <Text style={styles.navIcon}>✉</Text>
-  <Text style={styles.navText}>Email</Text>
-</TouchableOpacity>
+          <Text style={styles.navIcon}>✉</Text>
+          <Text style={styles.navText}>Email</Text>
+        </TouchableOpacity>
 
 
 
@@ -495,6 +509,14 @@ const styles = StyleSheet.create({
   },
 
   age: {
+    color: '#F5EAF5',
+    fontSize: 10,
+    marginTop: 4,
+  },
+
+
+
+    phone: {
     color: '#F5EAF5',
     fontSize: 10,
     marginTop: 4,
