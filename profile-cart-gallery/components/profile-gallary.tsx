@@ -1,15 +1,16 @@
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
-  View,
-  Text,
-  Image,
-  FlatList,
-  StyleSheet,
   ActivityIndicator,
+  FlatList,
+  Image,
   StatusBar,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
+  TextInput
 } from 'react-native';
 
 const cardColors = [
@@ -30,6 +31,9 @@ const cardColors = [
 const ProfileGallary = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // IP-based country states
   const [country, setCountry] = useState('Detecting...');
@@ -52,85 +56,25 @@ const ProfileGallary = () => {
       });
   }, []);
 
-  // DETECT COUNTRY USING IP ADDRESS (with fallback APIs for mobile)
+  // DETECT COUNTRY USING IP ADDRESS
   useEffect(() => {
-    let isMounted = true;
-
-    const detectCountry = async () => {
-      // API 1: ipwho.is
-      try {
-        const response = await fetch('https://ipwho.is/');
-        const data = await response.json();
-
-        if (response.ok && data.success !== false && data.country && data.country_code) {
-          if (isMounted) {
-            setCountry(data.country);
-            setCountryCode(data.country_code);
-          }
-          return;
+    fetch('https://ipapi.co/json/')
+      .then(res => {
+        if (!res.ok) throw new Error('Location API failed');
+        return res.json();
+      })
+      .then(data => {
+        if (data.error) {
+          throw new Error('Unable to detect country');
         }
-      } catch (error) {
-        console.log('ipwho.is failed:', error);
-      }
 
-      // API 2: ipapi.co
-      try {
-        const response = await fetch('https://ipapi.co/json/');
-        const data = await response.json();
-
-        if (response.ok && !data.error && data.country_name && data.country_code) {
-          if (isMounted) {
-            setCountry(data.country_name);
-            setCountryCode(data.country_code);
-          }
-          return;
-        }
-      } catch (error) {
-        console.log('ipapi.co failed:', error);
-      }
-
-      // API 3: country.is (returns country code only)
-      try {
-        const response = await fetch('https://api.country.is/');
-        const data = await response.json();
-
-        const countryNames: { [key: string]: string } = {
-          IN: 'India',
-          US: 'United States',
-          GB: 'United Kingdom',
-          CA: 'Canada',
-          AU: 'Australia',
-          DE: 'Germany',
-          FR: 'France',
-          ES: 'Spain',
-          BD: 'Bangladesh',
-          NP: 'Nepal',
-          SG: 'Singapore',
-          AE: 'United Arab Emirates',
-        };
-
-        const code = data.country;
-
-        if (response.ok && code && isMounted) {
-          setCountryCode(code);
-          setCountry(countryNames[code] || code);
-          return;
-        }
-      } catch (error) {
-        console.log('country.is failed:', error);
-      }
-
-      if (isMounted) {
+        setCountry(data.country_name || 'Unknown');
+        setCountryCode(data.country_code || '');
+      })
+      .catch(error => {
+        console.log('IP Location Error:', error);
         setCountry('Location unavailable');
-        setCountryCode('');
-      }
-    };
-
-    detectCountry();
-
-    return () => {
-      isMounted = false;
-    };
+      });
   }, []);
 
   if (loading) {
@@ -143,6 +87,22 @@ const ProfileGallary = () => {
       </View>
     );
   }
+
+
+
+
+const filteredUsers = users.filter((item) => {
+  const search = searchQuery.toLowerCase();
+
+  const fullName =
+    `${item.name.first} ${item.name.last}`.toLowerCase();
+
+  const country = item.location.country.toLowerCase();
+
+  return fullName.includes(search) || country.includes(search);
+});
+
+
 
   return (
     <View style={styles.container}>
@@ -162,6 +122,35 @@ const ProfileGallary = () => {
             <Text style={styles.badgeText}>2</Text>
           </View>
         </TouchableOpacity>
+
+
+
+
+{searchOpen && (
+  <TextInput
+    style={{
+      backgroundColor: '#1E293B',
+      color: '#FFFFFF',
+      padding: 12,
+      borderRadius: 12,
+      marginHorizontal: 12,
+      marginBottom: 12,
+    }}
+    placeholder="Search name or country..."
+    placeholderTextColor="#94A3B8"
+    value={searchQuery}
+    onChangeText={setSearchQuery}
+  />
+)}
+
+
+
+
+
+
+
+
+
 
         {/* IP DETECTED COUNTRY */}
 
@@ -185,16 +174,32 @@ const ProfileGallary = () => {
 
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.searchButton}>
-          <Text style={styles.searchIcon}>⌕</Text>
+
+
+
+        <TouchableOpacity
+          style={styles.searchButton}
+          onPress={() => {
+            setSearchOpen(!searchOpen);
+            setSearchQuery('');
+          }}
+        >
+          <Text style={styles.searchIcon}>
+            {searchOpen ? '✕' : '⌕'}
+          </Text>
         </TouchableOpacity>
+
+
 
       </View>
 
       {/* PROFILE GALLERY */}
 
       <FlatList
-        data={users}
+        
+
+
+        data={filteredUsers}
         keyExtractor={item => item.login.uuid}
         numColumns={3}
         showsVerticalScrollIndicator={false}
