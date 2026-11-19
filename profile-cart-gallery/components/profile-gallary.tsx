@@ -368,6 +368,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+     backgroundColor: '#A0522D',
     paddingHorizontal: 17,
   },
 
@@ -562,7 +563,7 @@ const styles = StyleSheet.create({
 
   bottomNav: {
     height: 68,
-    backgroundColor: '#191C27',
+    backgroundColor: '#D2691E',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
